@@ -86,9 +86,9 @@ namespace Financial.Cat.Api.Controllers
 		[ProducesResponseType(typeof(BaseOut<IList<AddressOutDto>>), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-		public async Task<IActionResult> GetAddressList([FromQuery] GetAddressListQuery data, CancellationToken cancellationToken)
+		public async Task<IActionResult> GetAddressList(CancellationToken cancellationToken)
 		{
-			var operation = await _mediator.Send(data, cancellationToken);
+			var operation = await _mediator.Send(new GetAddressListQuery(), cancellationToken);
 
 			return MakeResponse(operation);
 		}
@@ -103,9 +103,9 @@ namespace Financial.Cat.Api.Controllers
 		[ProducesResponseType(typeof(BaseOut<IList<CategoryOutDto>>), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-		public async Task<IActionResult> GetCategoryList([FromQuery] GetCategoryListQuery data, CancellationToken cancellationToken)
+		public async Task<IActionResult> GetCategoryList(CancellationToken cancellationToken)
 		{
-			var operation = await _mediator.Send(data, cancellationToken);
+			var operation = await _mediator.Send(new GetCategoryListQuery(), cancellationToken);
 
 			return MakeResponse(operation);
 		}

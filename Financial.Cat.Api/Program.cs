@@ -14,6 +14,8 @@ using Financial.Cat.Infrustructure.Configs;
 using Financial.Cat.Infrustructure.DB.Contexts;
 using Financial.Cat.Infrustructure.DB.Repository;
 using Financial.Cat.Infrustructure.Generators;
+using Financial.Cat.Infrustructure.Logger.Queues;
+using Financial.Cat.Infrustructure.Logger;
 using Financial.Cat.Infrustructure.Providers;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -25,6 +27,8 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
+using Financial.Cat.Application.UseCases;
+using Financial.Cat.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +46,13 @@ builder.Services.AddControllers()
 	{
 		options.InvalidModelStateResponseFactory = CustomProblemDetails.MakeValidationResponse;
 	});
+
+builder.Host.ConfigureLogging(opt =>
+{
+	opt.ClearProviders();
+	opt.AddConsole();
+	opt.AddDbLogger();
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -64,7 +75,7 @@ builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IItemNomenclatureRepository, ItemNomenclatureRepository>();
 builder.Services.AddScoped<ISettingLimitRepository, SettingLimitRepository>();
-builder.Services.AddScoped<IFileWriterService, FileWriterService>();
+builder.Services.AddScoped<IDbLogRepository, DbLogRepository>();
 
 builder.Services.AddScoped<ExceptionGenerator>();
 builder.Services.AddScoped<ResourceProvider>();
@@ -74,6 +85,10 @@ builder.Services.AddScoped<AccountTokenGenerator>();
 builder.Services.AddScoped<OtpGenerator>();
 
 builder.Services.AddScoped<IUserContextAccessor, UserContextAccessor>();
+
+builder.Services.AddScoped<IFileWriterService, FileWriterService>();
+builder.Services.AddScoped<DbLogger>();
+builder.Services.AddTransient<DbLoggerDeliverQueue>();
 
 builder.Services.AddAutoMapper(cfg =>
 {
@@ -127,20 +142,22 @@ builder.Services.AddSwaggerGen(c =>
 		}
 	});
 
-	// Set the comments path for the Swagger JSON and UI.
+	/*// Set the comments path for the Swagger JSON and UI.
 	var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
 	var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 	c.IncludeXmlComments(xmlPath);
 
 	c.SchemaFilter<EnumTypesSchemaFilter>(xmlPath);
-	c.DocumentFilter<EnumTypesDocumentFilter>();
+	c.DocumentFilter<EnumTypesDocumentFilter>();*/
 });
 
-foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+/*foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
 {
 	builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assembly));
-}
+}*/
 
+builder.Services.AddApplicationMediator();
+builder.Services.AddInfrustructureMediator();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
@@ -175,13 +192,5 @@ app.UseAuthorization();
 app.MapControllers();
 app.UseMiddleware<TransactionMiddleware>();
 
-/*using (var scope = app.Services.CreateScope())
-{
-	var provider = scope.ServiceProvider;
-	var categoryRepository = provider.GetRequiredService<ICategoryRepository>();
-	var categories = await categoryRepository.GetCategoryTreeAsync();
-	*//*var emailsender = provider.GetRequiredService<EmailExternalProvider>();
-	await emailsender.SendMsgAsync("b4caty@gmail.com", app.Lifetime.ApplicationStopping);*//*
-}
-*/
+
 app.Run();

@@ -25,6 +25,19 @@ namespace Financial.Cat.Infrustructure.Generators
 			var errorOutDto = GenerateErrorOutDto(ex, ex.AuxiliaryData);
 			return new BaseOut<bool?>(errorOutDto);
 		}
+		public ErrorOutDto GenerateErrorOutDto(ApplicationBadRequestException ex, IList<string>? auxiliaryData = null)
+		{
+			string? message = null;
+
+			if (!string.IsNullOrEmpty(message) && auxiliaryData != null && auxiliaryData.Count != 0)
+				message = string.Format(message, auxiliaryData.ToArray());
+
+			return new ErrorOutDto
+			{
+				Message = message ?? ErrorConstants.MESSAGE,
+				TechincalError = GenerateTechincalErrorOutDto(ex),
+			};
+		}
 
 		public ErrorOutDto GenerateErrorOutDto(Exception ex, IList<string>? auxiliaryData = null)
 		{

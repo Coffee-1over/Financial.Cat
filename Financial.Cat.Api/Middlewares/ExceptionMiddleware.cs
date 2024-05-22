@@ -57,11 +57,9 @@ namespace Financial.Cat.Api.Middlewares
 
 				await HandleExceptionAsync(httpContext, HttpStatusCode.InternalServerError, errorResponse);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				var errorResponse = exceptionProvider.GenerateBaseOutDtoWithError(ex);
-
-				await HandleExceptionAsync(httpContext, HttpStatusCode.InternalServerError, errorResponse);
+				throw;
 			}
 		}
 

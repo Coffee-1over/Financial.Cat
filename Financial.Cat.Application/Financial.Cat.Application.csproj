@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	  <_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +15,8 @@
     <PackageReference Include="Npoi.Mapper" Version="6.2.1" />
   </ItemGroup>
 
-  <ItemGroup>
+
+	<ItemGroup>
     <ProjectReference Include="..\Financial.Cat.Domain\Financial.Cat.Domain.csproj" />
     <ProjectReference Include="..\Financial.Cat.Infrastructure\Financial.Cat.Infrastructure.csproj" />
   </ItemGroup>

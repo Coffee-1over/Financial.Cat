@@ -45,5 +45,6 @@ namespace Financial.Cat.Infrustructure.DB.Contexts
 		public DbSet<AuthOperationEntity> AuthOperations { get; set; }
 		public DbSet<OtpEntity> Otps { get; set; }
 		public DbSet<SettingLimitEntity> SettingLimits { get; set; }
+		public DbSet<DbLogEntity> Logs { get; set; }
 	}
 }
